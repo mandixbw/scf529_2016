@@ -21,13 +21,37 @@ if (!(file.exists("scf2016.rda"))) {
   load("scf2016.rda")
 }
 
-# Calculate Income Percentile.  
+#explore
+data <- data %>% 
+  mutate(wgt = X42001/5)
 
+viewme <- data %>% select(Y1, YY1, wgt, X5729)
+
+repwtnames <- names(repweights)
+write.csv(repwtnames, file="repwtnames.csv")
+
+# Calculate Income Percentile.  
 library(survey)
 library(mitools)
 library(srvyr)
+  
+scf_design <- svrepdesign(repweights = starts_with("WT1B"),
+                          weights = wgt,
+                          data = data,
+                          type = "other",
+                          scale = 1,
+                          rscales = rep( 1 / 998 , 999 ),
+                          mse=TRUE,
+                          combined.weights = TRUE)
 
-scf_design <- svrepdesign()
+weights = ~wgt , 
+repweights = scf_rw[ , -1 ] , 
+data = imputationList( scf_imp ) , 
+scale = 1 ,
+rscales = rep( 1 / 998 , 999 ) ,
+mse = TRUE ,
+type = "other" ,
+combined.weights = TRUE
 
 
 
